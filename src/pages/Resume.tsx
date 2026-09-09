@@ -37,6 +37,35 @@ const formatOptions = [
 
 type FormatId = (typeof formatOptions)[number]["id"];
 
+function printResume(element: HTMLElement | null) {
+  if (!element) throw new Error("Resume preview is not ready yet.");
+  const printWindow = window.open("", "_blank", "width=900,height=1200");
+  if (!printWindow) throw new Error("Please allow pop-ups to download the resume.");
+
+  const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map((style) => style.outerHTML)
+    .join("\n");
+  const resume = element.cloneNode(true) as HTMLElement;
+  resume.removeAttribute("style");
+  resume.classList.remove("shadow-xl", "rounded-lg", "overflow-hidden");
+
+  printWindow.document.write(`<!doctype html>
+    <html><head><meta charset="utf-8"><title>Resume</title>${styles}
+    <style>
+      @page { size: A4; margin: 0; }
+      html, body { margin: 0; padding: 0; background: #fff; }
+      body { color: #1a1a1a; }
+      .resume-template { width: 100%; max-width: 100%; box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; opacity: 1 !important; visibility: visible !important; transform: none !important; zoom: 0.96; }
+      .resume-template * { opacity: 1 !important; visibility: visible !important; transform: none !important; }
+    </style></head><body>${resume.outerHTML}</body></html>`);
+  printWindow.document.close();
+  printWindow.focus();
+  window.setTimeout(() => {
+    printWindow.print();
+    printWindow.close();
+  }, 500);
+}
+
 const Resume = () => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("modern");
@@ -61,12 +90,13 @@ const Resume = () => {
 
       if (format === "pdf" || format === "image") {
         setDialogOpen(false);
-        await new Promise<void>((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
-        });
-        await document.fonts?.ready;
-        window.print();
-        setDownloading(false);
+        try {
+          printResume(resumeRef.current?.querySelector(".resume-template") as HTMLElement | null);
+        } catch (error) {
+          toast({ title: "Download failed", description: error instanceof Error ? error.message : "Unable to prepare the resume.", variant: "destructive" });
+        } finally {
+          setDownloading(false);
+        }
         return;
       }
 
