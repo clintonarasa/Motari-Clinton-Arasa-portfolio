@@ -16,6 +16,16 @@ export interface ResumeData {
   skills: { technical: string[]; soft: string[] };
   certifications: Array<{ name: string }>;
   awards: string[];
+  references: ResumeReference[];
+}
+
+export interface ResumeReference {
+  id: string;
+  name: string;
+  title: string;
+  company: string;
+  email: string;
+  phone: string;
 }
 
 const emptyResumeData: ResumeData = {
@@ -25,6 +35,7 @@ const emptyResumeData: ResumeData = {
   skills: { technical: [], soft: [] },
   certifications: [],
   awards: [],
+  references: [],
 };
 
 type ExperienceRow = {
@@ -55,6 +66,7 @@ type EducationRow = {
 type SkillRow = { category?: string; skill_name?: string };
 type CertificationRow = { name?: string };
 type AwardRow = { title?: string; name?: string };
+type ReferenceRow = { id?: string; name?: string; title?: string; company?: string; email?: string; phone?: string };
 
 function formatDate(value?: string | null) {
   return value ? value.slice(0, 10) : "";
@@ -100,15 +112,16 @@ export function useResumeData() {
           return;
         }
 
-        const [experienceResult, educationResult, skillsResult, certificationsResult, awardsResult] = await Promise.all([
+        const [experienceResult, educationResult, skillsResult, certificationsResult, awardsResult, referencesResult] = await Promise.all([
           supabase.from("experience").select("*").eq("user_id", admin.id).order("start_date", { ascending: false }),
           supabase.from("education").select("*").eq("user_id", admin.id).order("start_date", { ascending: false }),
           supabase.from("skills").select("*").eq("user_id", admin.id).order("category", { ascending: true }),
           supabase.from("certifications").select("*").eq("user_id", admin.id).order("issued_date", { ascending: false }),
           supabase.from("awards").select("*").eq("user_id", admin.id).order("awarded_date", { ascending: false }),
+          supabase.from("references").select("*").eq("user_id", admin.id).order("created_at", { ascending: true }),
         ]);
 
-        const failedQuery = [experienceResult, educationResult, skillsResult, certificationsResult, awardsResult].find((result) => result.error);
+        const failedQuery = [experienceResult, educationResult, skillsResult, certificationsResult, awardsResult, referencesResult].find((result) => result.error);
         if (failedQuery?.error) throw failedQuery.error;
 
         setData({
@@ -133,6 +146,14 @@ export function useResumeData() {
           },
           certifications: ((certificationsResult.data || []) as CertificationRow[]).map((cert) => ({ name: cert.name || "" })).filter((cert) => cert.name),
           awards: ((awardsResult.data || []) as AwardRow[]).map((award) => award.title || award.name || "").filter(Boolean),
+          references: ((referencesResult.data || []) as ReferenceRow[]).map((reference) => ({
+            id: reference.id || `${reference.name}-${reference.email}`,
+            name: reference.name || "",
+            title: reference.title || "",
+            company: reference.company || "",
+            email: reference.email || "",
+            phone: reference.phone || "",
+          })).filter((reference) => reference.name),
         });
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError : new Error("Unable to load resume data"));

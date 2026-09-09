@@ -1,13 +1,15 @@
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import type { ResumeData } from "@/components/resume/useResumeData";
+import ResumeReferences from "@/components/resume/ResumeReferences";
 
 interface Props {
   profilePhoto: string;
   accent: string;
   data: ResumeData;
+  showReferences: boolean;
 }
 
-const ResumeProfessional = ({ data, accent }: Props) => {
+const ResumeProfessional = ({ data, accent, showReferences }: Props) => {
   const { profile } = useSiteSettings();
   const competencies = [...data.skills.technical, ...data.skills.soft];
   const technicalSkills = data.skills.technical.map((skill) => {
@@ -92,6 +94,7 @@ const ResumeProfessional = ({ data, accent }: Props) => {
           ))}
         </ul>
       </section>
+      {showReferences && <ResumeReferences references={data.references} accent={accent} />}
     </div>
   );
 };

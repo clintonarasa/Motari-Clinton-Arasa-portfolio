@@ -72,6 +72,7 @@ const Resume = () => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("modern");
+  const [showReferences, setShowReferences] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const { resumeUrl, resumeName, profilePhoto, accentHex } = useSiteSettings();
@@ -137,13 +138,13 @@ const Resume = () => {
   const renderTemplate = () => {
     switch (selectedTemplate) {
       case "classic":
-        return <ResumeClassic profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
+        return <ResumeClassic profilePhoto={profilePhoto} accent={accentHex} data={resumeData} showReferences={showReferences} />;
       case "creative":
-        return <ResumeCreative profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
+        return <ResumeCreative profilePhoto={profilePhoto} accent={accentHex} data={resumeData} showReferences={showReferences} />;
       case "twocolumn":
-        return <ResumeTwoColumn profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
+        return <ResumeTwoColumn profilePhoto={profilePhoto} accent={accentHex} data={resumeData} showReferences={showReferences} />;
       case "professional":
-        return <ResumeProfessional profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
+        return <ResumeProfessional profilePhoto={profilePhoto} accent={accentHex} data={resumeData} showReferences={showReferences} />;
       case "custom":
         if (!resumeUrl) {
           return <div className="bg-white p-16 text-center text-muted-foreground">No custom resume has been uploaded yet.</div>;
@@ -167,7 +168,7 @@ const Resume = () => {
           </div>
         );
       default:
-        return <ResumeModern profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
+        return <ResumeModern profilePhoto={profilePhoto} accent={accentHex} data={resumeData} showReferences={showReferences} />;
     }
   };
 
@@ -180,9 +181,20 @@ const Resume = () => {
             <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft size={16} /> Back to Portfolio
             </Link>
-            <Button onClick={() => setDialogOpen(true)} size="sm" className="gap-2">
-              <Download size={16} /> Download Resume
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={showReferences ? "default" : "outline"}
+                onClick={() => setShowReferences((current) => !current)}
+                size="sm"
+                className="gap-2"
+                aria-pressed={showReferences}
+              >
+                References: {showReferences ? "On" : "Off"}
+              </Button>
+              <Button onClick={() => setDialogOpen(true)} size="sm" className="gap-2">
+                <Download size={16} /> Download Resume
+              </Button>
+            </div>
           </div>
         </div>
 

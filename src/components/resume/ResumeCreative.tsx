@@ -1,14 +1,16 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import type { ResumeData } from "@/components/resume/useResumeData";
+import ResumeReferences from "@/components/resume/ResumeReferences";
 
 interface Props {
   profilePhoto: string;
   accent: string;
   data: ResumeData;
+  showReferences: boolean;
 }
 
-const ResumeCreative = ({ profilePhoto, accent, data }: Props) => {
+const ResumeCreative = ({ profilePhoto, accent, data, showReferences }: Props) => {
   const { profile } = useSiteSettings();
   const { summary: professionalSummary, skills, experience: workExperience, education, certifications, awards } = data;
   const display = profile;
@@ -82,6 +84,7 @@ const ResumeCreative = ({ profilePhoto, accent, data }: Props) => {
             </ul>
           </section>
         </div>
+        {showReferences && <ResumeReferences references={data.references} accent={accent} compact />}
       </div>
     </div>
   );
