@@ -15,7 +15,7 @@ const ResumeTwoColumn = ({ profilePhoto, accent, data }: Props) => {
   return (
   <div className="font-sans text-[#222] bg-white max-w-4xl mx-auto flex min-h-[800px]">
     {/* Sidebar */}
-    <div className="w-[240px] bg-[#1e293b] text-white p-6 flex-shrink-0 space-y-6">
+    <div className="w-[240px] text-white p-6 flex-shrink-0 space-y-6" style={{ backgroundColor: accent }}>
       <div className="text-center">
         {profilePhoto && <img src={profilePhoto} alt={display.name} className="w-20 h-20 rounded-full object-cover mx-auto border-2 border-white/20" />}
         <h1 className="text-lg font-bold mt-3 leading-tight">{display.name}</h1>

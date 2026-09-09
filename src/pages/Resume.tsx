@@ -20,11 +20,11 @@ import ResumeProfessional from "@/components/resume/ResumeProfessional";
 import { useResumeData } from "@/components/resume/useResumeData";
 
 const templates = [
-  { id: "modern", label: "Modern Minimal", description: "Sleek & clean with whitespace", color: "#888" },
-  { id: "classic", label: "Classic", description: "Traditional serif-based formality", color: "#333" },
-  { id: "creative", label: "Creative Bold", description: "Colorful accents & unique layout", color: "#c44d20" },
-  { id: "twocolumn", label: "Two-Column", description: "Sidebar with skills & compact body", color: "#1e293b" },
-  { id: "professional", label: "Professional", description: "Formal single-column application layout", color: "#171717" },
+  { id: "modern", label: "Modern Minimal", description: "Sleek & clean with whitespace" },
+  { id: "classic", label: "Classic", description: "Traditional serif-based formality" },
+  { id: "creative", label: "Creative Bold", description: "Colorful accents & unique layout" },
+  { id: "twocolumn", label: "Two-Column", description: "Sidebar with skills & compact body" },
+  { id: "professional", label: "Professional", description: "Formal single-column application layout" },
 ] as const;
 
 type TemplateId = (typeof templates)[number]["id"];
@@ -143,7 +143,7 @@ const Resume = () => {
                   >
                     <span
                       className="w-3 h-3 rounded-sm flex-shrink-0"
-                      style={{ backgroundColor: t.color }}
+                      style={{ backgroundColor: accentHex }}
                     />
                     <span>{t.label}</span>
                   </button>

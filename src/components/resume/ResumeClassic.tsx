@@ -14,7 +14,7 @@ const ResumeClassic = ({ profilePhoto, accent, data }: Props) => {
   const display = profile;
   return (
   <div className="font-serif text-[#1a1a1a] bg-white p-10 print:p-8 max-w-4xl mx-auto">
-    <div className="text-center border-b-2 border-[#333] pb-5 mb-6">
+    <div className="text-center border-b-2 pb-5 mb-6" style={{ borderColor: accent }}>
       <h1 className="text-3xl font-bold tracking-wide uppercase">{display.name}</h1>
       <p className="text-base text-[#555] mt-1 italic">{display.title}</p>
       <div className="flex justify-center flex-wrap gap-x-5 gap-y-1 mt-3 text-xs text-[#666]">
@@ -24,11 +24,11 @@ const ResumeClassic = ({ profilePhoto, accent, data }: Props) => {
       </div>
     </div>
     <section className="mb-6">
-      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b border-[#999] pb-1 mb-3">Professional Summary</h2>
+      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b pb-1 mb-3" style={{ borderColor: accent }}>Professional Summary</h2>
       <p className="text-xs leading-relaxed text-[#444]">{professionalSummary}</p>
     </section>
     <section className="mb-6">
-      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b border-[#999] pb-1 mb-3">Experience</h2>
+      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b pb-1 mb-3" style={{ borderColor: accent }}>Experience</h2>
       <div className="space-y-4">
         {workExperience.map((job, i) => (
           <div key={i}>
@@ -45,7 +45,7 @@ const ResumeClassic = ({ profilePhoto, accent, data }: Props) => {
       </div>
     </section>
     <section className="mb-6">
-      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b border-[#999] pb-1 mb-3">Education</h2>
+      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b pb-1 mb-3" style={{ borderColor: accent }}>Education</h2>
       <div className="space-y-2">
         {education.map((e, i) => (
           <div key={i} className="flex justify-between items-baseline">
@@ -59,18 +59,18 @@ const ResumeClassic = ({ profilePhoto, accent, data }: Props) => {
       </div>
     </section>
     <section className="mb-6">
-      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b border-[#999] pb-1 mb-3">Skills</h2>
+      <h2 className="text-sm font-bold uppercase tracking-[3px] border-b pb-1 mb-3" style={{ borderColor: accent }}>Skills</h2>
       <p className="text-xs text-[#444]">{[...skills.technical, ...skills.soft].join(" · ")}</p>
     </section>
     <div className="grid grid-cols-2 gap-6">
       <section>
-        <h2 className="text-sm font-bold uppercase tracking-[3px] border-b border-[#999] pb-1 mb-2">Certifications</h2>
+        <h2 className="text-sm font-bold uppercase tracking-[3px] border-b pb-1 mb-2" style={{ borderColor: accent }}>Certifications</h2>
         <ul className="text-xs text-[#444] space-y-0.5 list-disc list-inside">
           {certifications.map((c, i) => <li key={i}>{c.name}</li>)}
         </ul>
       </section>
       <section>
-        <h2 className="text-sm font-bold uppercase tracking-[3px] border-b border-[#999] pb-1 mb-2">Awards</h2>
+        <h2 className="text-sm font-bold uppercase tracking-[3px] border-b pb-1 mb-2" style={{ borderColor: accent }}>Awards</h2>
         <ul className="text-xs text-[#444] space-y-0.5 list-disc list-inside">
           {awards.map((a, i) => <li key={i}>{a}</li>)}
         </ul>

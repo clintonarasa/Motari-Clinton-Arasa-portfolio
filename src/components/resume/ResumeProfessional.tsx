@@ -7,7 +7,7 @@ interface Props {
   data: ResumeData;
 }
 
-const ResumeProfessional = ({ data }: Props) => {
+const ResumeProfessional = ({ data, accent }: Props) => {
   const { profile } = useSiteSettings();
   const competencies = [...data.skills.technical, ...data.skills.soft];
   const technicalSkills = data.skills.technical.map((skill) => {
@@ -19,7 +19,7 @@ const ResumeProfessional = ({ data }: Props) => {
 
   return (
     <div className="font-serif text-[#171717] bg-white px-10 py-8 max-w-4xl mx-auto">
-      <header className="text-center border-b border-[#222] pb-3 mb-4">
+      <header className="text-center border-b pb-3 mb-4" style={{ borderColor: accent }}>
         <h1 className="text-2xl font-bold uppercase tracking-wide">{profile.name}</h1>
         <p className="text-[10px] font-bold uppercase mt-1">
           {profile.title}
@@ -31,17 +31,17 @@ const ResumeProfessional = ({ data }: Props) => {
       </header>
 
       <section className="mb-4">
-        <h2 className="text-xs font-bold uppercase border-b border-[#444] pb-1 mb-2">Professional Summary</h2>
+        <h2 className="text-xs font-bold uppercase border-b pb-1 mb-2" style={{ borderColor: accent }}>Professional Summary</h2>
         <p className="text-[10px] leading-relaxed">{data.summary}</p>
       </section>
 
       <section className="mb-4">
-        <h2 className="text-xs font-bold uppercase border-b border-[#444] pb-1 mb-2">Core ICT Competencies</h2>
+        <h2 className="text-xs font-bold uppercase border-b pb-1 mb-2" style={{ borderColor: accent }}>Core ICT Competencies</h2>
         <p className="text-[10px] leading-relaxed">{competencies.join(" | ")}</p>
       </section>
 
       <section className="mb-4">
-        <h2 className="text-xs font-bold uppercase border-b border-[#444] pb-1 mb-2">Technical Skills</h2>
+        <h2 className="text-xs font-bold uppercase border-b pb-1 mb-2" style={{ borderColor: accent }}>Technical Skills</h2>
         <div className="space-y-1 text-[10px] leading-relaxed">
           {technicalSkills.map((skill) => (
             <p key={skill.label}><strong>{skill.label}:</strong> {skill.value}</p>
@@ -50,7 +50,7 @@ const ResumeProfessional = ({ data }: Props) => {
       </section>
 
       <section className="mb-4">
-        <h2 className="text-xs font-bold uppercase border-b border-[#444] pb-1 mb-2">Professional Experience</h2>
+        <h2 className="text-xs font-bold uppercase border-b pb-1 mb-2" style={{ borderColor: accent }}>Professional Experience</h2>
         <div className="space-y-3">
           {data.experience.map((job, index) => (
             <article key={`${job.company}-${index}`}>
@@ -73,7 +73,7 @@ const ResumeProfessional = ({ data }: Props) => {
       </section>
 
       <section className="mb-4">
-        <h2 className="text-xs font-bold uppercase border-b border-[#444] pb-1 mb-2">Education</h2>
+        <h2 className="text-xs font-bold uppercase border-b pb-1 mb-2" style={{ borderColor: accent }}>Education</h2>
         <div className="space-y-2 text-[10px]">
           {data.education.map((item, index) => (
             <div key={`${item.institution}-${index}`}>
@@ -85,7 +85,7 @@ const ResumeProfessional = ({ data }: Props) => {
       </section>
 
       <section>
-        <h2 className="text-xs font-bold uppercase border-b border-[#444] pb-1 mb-2">Professional Development</h2>
+        <h2 className="text-xs font-bold uppercase border-b pb-1 mb-2" style={{ borderColor: accent }}>Professional Development</h2>
         <ul className="list-disc ml-4 space-y-0.5 text-[10px]">
           {data.certifications.map((certification, index) => (
             <li key={`${certification.name}-${index}`}>{certification.name}</li>

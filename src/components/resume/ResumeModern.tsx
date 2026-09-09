@@ -26,13 +26,13 @@ const ResumeModern = ({ profilePhoto, accent, data }: Props) => {
         </div>
       </div>
     </header>
-    <hr className="border-[#eee] mb-6" />
+    <hr className="mb-6" style={{ borderColor: accent }} />
     <section className="mb-7">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b border-[#eee]">About Me</h2>
+      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b" style={{ borderColor: accent }}>About Me</h2>
       <p className="text-xs text-[#555] leading-relaxed">{professionalSummary}</p>
     </section>
     <section className="mb-7">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b border-[#eee]">Education</h2>
+      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b" style={{ borderColor: accent }}>Education</h2>
       <div className="space-y-3">
         {education.map((e, i) => (
           <div key={i} className="flex gap-6">
@@ -46,7 +46,7 @@ const ResumeModern = ({ profilePhoto, accent, data }: Props) => {
       </div>
     </section>
     <section className="mb-7">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b border-[#eee]">Work Experience</h2>
+      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b" style={{ borderColor: accent }}>Work Experience</h2>
       <div className="space-y-4">
         {workExperience.map((job, i) => (
           <div key={i} className="flex gap-6">
@@ -67,18 +67,18 @@ const ResumeModern = ({ profilePhoto, accent, data }: Props) => {
       </div>
     </section>
     <section className="mb-7">
-      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b border-[#eee]">Skills</h2>
+      <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-3 pb-2 border-b" style={{ borderColor: accent }}>Skills</h2>
       <div className="grid grid-cols-3 gap-x-6 gap-y-1">
         {[...skills.technical, ...skills.soft].map((s, i) => (
           <span key={i} className="text-[10px] text-[#555] flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ccc]" />{s}
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />{s}
           </span>
         ))}
       </div>
     </section>
     <div className="grid grid-cols-2 gap-8">
       <section>
-        <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-2 pb-2 border-b border-[#eee]">Certifications</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-2 pb-2 border-b" style={{ borderColor: accent }}>Certifications</h2>
         <ul className="space-y-1">
           {certifications.map((c, i) => (
             <li key={i} className="text-[10px] text-[#555] flex items-start gap-1.5">
@@ -88,7 +88,7 @@ const ResumeModern = ({ profilePhoto, accent, data }: Props) => {
         </ul>
       </section>
       <section>
-        <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-2 pb-2 border-b border-[#eee]">Awards</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-[3px] text-center mb-2 pb-2 border-b" style={{ borderColor: accent }}>Awards</h2>
         <ul className="space-y-1">
           {awards.map((a, i) => (
             <li key={i} className="text-[10px] text-[#555] flex items-start gap-1.5">
