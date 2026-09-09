@@ -54,7 +54,7 @@ function printResume(element: HTMLElement | null) {
   printWindow.document.write(`<!doctype html>
     <html><head><meta charset="utf-8"><title>Resume</title>${styles}
     <style>
-      @page { size: A4; margin: 0; }
+      @page { size: A4; margin: 1in; }
       html, body { margin: 0; padding: 0; background: #fff; }
       body { color: #1a1a1a; }
       .resume-template { width: 100%; max-width: 100%; box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; opacity: 1 !important; visibility: visible !important; transform: none !important; zoom: 0.96; }
