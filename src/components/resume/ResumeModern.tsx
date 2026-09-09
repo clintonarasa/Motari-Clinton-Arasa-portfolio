@@ -53,7 +53,7 @@ const ResumeModern = ({ profilePhoto, accent, data }: Props) => {
             <span className="text-[10px] text-[#999] font-medium w-24 flex-shrink-0 pt-0.5">{job.dates}</span>
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wide">{job.company} | {job.title}</h3>
-              <ul className="mt-1 space-y-0.5 text-[10px] text-[#555]">
+              <ul className="mt-1 list-disc list-inside space-y-0.5 text-[10px] text-[#555]">
                 {job.responsibilities.map((r, j) => <li key={j}>{r}</li>)}
               </ul>
               {job.achievements.length > 0 && (
