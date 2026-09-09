@@ -223,7 +223,7 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
     }
     if (!requestPath.startsWith("/api/neon")) return next();
     try {
-      const url = new URL(request.url, "http://localhost");
+      const url = new URL(request.url || "/", "http://localhost");
       const table = url.searchParams.get("table") || "";
       const operation = url.searchParams.get("operation") || "select";
       if (!allowedTables.has(table)) return json(response, 400, { error: "Unsupported table" });

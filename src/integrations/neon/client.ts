@@ -1,17 +1,18 @@
-type QueryResult<T = unknown> = { data: T; error: Error | null; count?: number | null };
+type QueryError = Error & { code?: string };
+type QueryResult<T = any> = { data: T; error: QueryError | null; count?: number | null };
 
 type Filter = { column: string; value: unknown };
 type Operation = "select" | "insert" | "update" | "delete";
 
 const LOCAL_USER_ID = "00000000-0000-0000-0000-000000000001";
 
-function request<T>(url: string, options?: RequestInit): Promise<QueryResult<T>> {
+function request<T = any>(url: string, options?: RequestInit): Promise<QueryResult<T>> {
   return fetch(url, {
     ...options,
     headers: { "Content-Type": "application/json", ...options?.headers },
   }).then(async (response) => {
     const body = await response.json().catch(() => ({}));
-    if (!response.ok) return { data: null as T, error: new Error(body.error || response.statusText) };
+    if (!response.ok) return { data: null as T, error: Object.assign(new Error(body.error || response.statusText), { code: body.code }) };
     if (options?.method && options.method !== "GET") {
       const timestamp = String(Date.now());
       localStorage.setItem("portfolio-data-updated", timestamp);
@@ -21,7 +22,7 @@ function request<T>(url: string, options?: RequestInit): Promise<QueryResult<T>>
   });
 }
 
-class QueryBuilder implements PromiseLike<QueryResult<unknown>> {
+class QueryBuilder<T = any> implements PromiseLike<QueryResult<T>> {
   private operation: Operation = "select";
   private payload: unknown;
   private filters: Filter[] = [];
@@ -39,7 +40,7 @@ class QueryBuilder implements PromiseLike<QueryResult<unknown>> {
     return this;
   }
 
-  insert(rows: unknown[]) {
+  insert(rows: unknown[] | unknown) {
     this.operation = "insert";
     this.payload = rows;
     return this;
@@ -82,8 +83,8 @@ class QueryBuilder implements PromiseLike<QueryResult<unknown>> {
     return this;
   }
 
-  then<TResult1 = QueryResult<unknown>, TResult2 = never>(
-    onfulfilled?: ((value: QueryResult<unknown>) => TResult1 | PromiseLike<TResult1>) | null,
+  then<TResult1 = QueryResult<T>, TResult2 = never>(
+    onfulfilled?: ((value: QueryResult<T>) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ) {
     const params = new URLSearchParams({ table: this.table, operation: this.operation });
@@ -95,7 +96,7 @@ class QueryBuilder implements PromiseLike<QueryResult<unknown>> {
 
     const method = this.operation === "select" ? "GET" : this.operation === "delete" ? "DELETE" : "POST";
     const body = this.operation === "select" || this.operation === "delete" ? undefined : JSON.stringify({ payload: this.payload });
-    return request(`/api/neon?${params}`, { method, body }).then((result) => {
+    return request<T>(`/api/neon?${params}`, { method, body }).then((result) => {
       if (this.isSingle) return { ...result, data: Array.isArray(result.data) ? result.data[0] || null : result.data };
       return result;
     }).then(onfulfilled, onrejected);
@@ -103,7 +104,7 @@ class QueryBuilder implements PromiseLike<QueryResult<unknown>> {
 }
 
 export const supabase = {
-  from: (table: string) => new QueryBuilder(table),
+  from: <T = any>(table: string) => new QueryBuilder<T>(table),
   auth: {
     getUser: async () => ({ data: { user: localStorage.getItem("__local_admin_session__") ? { id: LOCAL_USER_ID, email: localStorage.getItem("__local_admin_email__") || "admin" } : null }, error: null }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => undefined } } }),

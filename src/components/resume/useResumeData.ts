@@ -105,7 +105,7 @@ export function useResumeData() {
           .select("id")
           .eq("is_admin", true)
           .limit(1)
-          .single();
+          .single() as { data: { id?: string } | null };
 
         if (!admin?.id) {
           setData({ ...emptyResumeData, summary: profile.summary || profile.bio });
