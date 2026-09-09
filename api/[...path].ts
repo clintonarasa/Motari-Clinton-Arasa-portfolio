@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Pool } from "pg";
-import { ensureNeonSchema, neonApiMiddleware } from "../server/neon-api";
+import { ensureNeonSchema, neonApiMiddleware } from "../server/neon-api.js";
 
 let pool: Pool | undefined;
 let schemaReady: Promise<void> | undefined;
