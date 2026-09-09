@@ -151,7 +151,12 @@ const Resume = () => {
         return (
           <div className="bg-white min-h-[800px] p-6">
             {resumeName?.toLowerCase().endsWith(".pdf") ? (
-              <iframe title="Custom uploaded resume" src={resumeUrl} className="w-full min-h-[1000px] border-0" />
+              <object data={resumeUrl} type="application/pdf" title="Custom uploaded resume" className="h-[1000px] w-full">
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                  <p className="text-sm text-muted-foreground">Your browser cannot preview this PDF here.</p>
+                  <a href={resumeUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-primary underline">Open uploaded resume</a>
+                </div>
+              </object>
             ) : (
               <div className="flex min-h-[760px] flex-col items-center justify-center gap-3 text-center">
                 <FileText size={40} className="text-primary" />

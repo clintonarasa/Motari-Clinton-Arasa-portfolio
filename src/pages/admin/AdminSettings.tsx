@@ -157,6 +157,12 @@ const AdminSettings = () => {
     }
     try {
       const { publicUrl } = await uploadPortfolioAsset(file, "resume");
+        if (!user) throw new Error("Admin session is not available. Please sign in again.");
+        const { error: saveError } = await supabase
+          .from("users")
+          .update({ resume_url: publicUrl, resume_name: file.name })
+          .eq("id", user.id);
+        if (saveError) throw saveError;
       setResume(publicUrl, file.name);
       toast({ title: "Resume uploaded", description: `"${file.name}" is stored in Neon.` });
     } catch (error) {
@@ -166,6 +172,7 @@ const AdminSettings = () => {
 
   const handleRemoveResume = () => {
     setResume(null, null);
+    if (user) void supabase.from("users").update({ resume_url: null, resume_name: null }).eq("id", user.id);
     toast({ title: "Resume removed", description: "Resume file has been removed." });
   };
 
