@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import PageTransition from "@/components/portfolio/PageTransition";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+import { useToast } from "@/hooks/use-toast";
 import ResumeClassic from "@/components/resume/ResumeClassic";
 import ResumeModern from "@/components/resume/ResumeModern";
 import ResumeCreative from "@/components/resume/ResumeCreative";
@@ -25,6 +26,7 @@ const templates = [
   { id: "creative", label: "Creative Bold", description: "Colorful accents & unique layout" },
   { id: "twocolumn", label: "Two-Column", description: "Sidebar with skills & compact body" },
   { id: "professional", label: "Professional", description: "Formal single-column application layout" },
+  { id: "custom", label: "Custom Resume", description: "The resume uploaded from Admin Settings" },
 ] as const;
 
 type TemplateId = (typeof templates)[number]["id"];
@@ -68,6 +70,7 @@ function printResume(element: HTMLElement | null) {
 
 const Resume = () => {
   const resumeRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("modern");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -78,13 +81,19 @@ const Resume = () => {
     async (format: FormatId) => {
       setDownloading(true);
 
-      if (resumeUrl && (format === "pdf" || format === "word")) {
+      if (selectedTemplate === "custom" && resumeUrl) {
         const a = document.createElement("a");
         a.href = resumeUrl;
-        a.download = resumeName || `resume.${format === "pdf" ? "pdf" : "docx"}`;
+        a.download = resumeName || "resume";
         a.click();
         setDownloading(false);
         setDialogOpen(false);
+        return;
+      }
+
+      if (selectedTemplate === "custom") {
+        toast({ title: "Custom resume unavailable", description: "Upload a resume from Admin Settings first.", variant: "destructive" });
+        setDownloading(false);
         return;
       }
 
@@ -122,7 +131,7 @@ const Resume = () => {
       setDownloading(false);
       setDialogOpen(false);
     },
-    [resumeUrl, resumeName]
+    [resumeUrl, resumeName, selectedTemplate, toast]
   );
 
   const renderTemplate = () => {
@@ -135,6 +144,23 @@ const Resume = () => {
         return <ResumeTwoColumn profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
       case "professional":
         return <ResumeProfessional profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
+      case "custom":
+        if (!resumeUrl) {
+          return <div className="bg-white p-16 text-center text-muted-foreground">No custom resume has been uploaded yet.</div>;
+        }
+        return (
+          <div className="bg-white min-h-[800px] p-6">
+            {resumeName?.toLowerCase().endsWith(".pdf") ? (
+              <iframe title="Custom uploaded resume" src={resumeUrl} className="w-full min-h-[1000px] border-0" />
+            ) : (
+              <div className="flex min-h-[760px] flex-col items-center justify-center gap-3 text-center">
+                <FileText size={40} className="text-primary" />
+                <h2 className="text-xl font-semibold">{resumeName || "Custom resume"}</h2>
+                <p className="text-sm text-muted-foreground">This uploaded file will download when you choose a format.</p>
+              </div>
+            )}
+          </div>
+        );
       default:
         return <ResumeModern profilePhoto={profilePhoto} accent={accentHex} data={resumeData} />;
     }
