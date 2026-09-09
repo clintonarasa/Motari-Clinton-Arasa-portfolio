@@ -66,6 +66,15 @@ function formatDateRange(start?: string | null, end?: string | null, current?: b
   return startDate ? `${startDate} - ${endDate}` : endDate === "Present" ? endDate : "";
 }
 
+function normalizeBulletList(values: unknown): string[] {
+  if (!Array.isArray(values)) return [];
+  return values
+    .filter((value): value is string => typeof value === "string")
+    .flatMap((value) => value.split(/\r?\n|\s*[•●▪]\s*/))
+    .map((value) => value.replace(/^[-*]\s*/, "").trim())
+    .filter(Boolean);
+}
+
 export function useResumeData() {
   const { profile, settingsReady } = useSiteSettings();
   const [data, setData] = useState<ResumeData>(emptyResumeData);
@@ -109,8 +118,8 @@ export function useResumeData() {
             company: job.company || "",
             location: job.location || "",
             dates: formatDateRange(job.start_date, job.end_date, job.is_current),
-            responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities.filter(Boolean) : job.description ? [job.description] : [],
-            achievements: Array.isArray(job.achievements) ? job.achievements.filter(Boolean) : [],
+            responsibilities: normalizeBulletList(Array.isArray(job.responsibilities) ? job.responsibilities : job.description ? [job.description] : []),
+            achievements: normalizeBulletList(job.achievements),
           })),
           education: ((educationResult.data || []) as EducationRow[]).map((item) => ({
             degree: item.field_of_study || item.degree || "",

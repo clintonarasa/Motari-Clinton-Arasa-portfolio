@@ -166,6 +166,13 @@
     zoom: 0.96;
   }
 
+  .resume-template,
+  .resume-template * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
   .resume-template h1 {
     font-weight: 600 !important;
   }
