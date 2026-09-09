@@ -23,7 +23,9 @@ export default async function handler(request: VercelRequest, response: VercelRe
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
-  if (request.url === "/api/health") {
+  const requestPath = new URL(request.url || "/", "https://vercel.local").pathname;
+
+  if (requestPath === "/api/health") {
     try {
       const { schemaReady } = getApi();
       await schemaReady;

@@ -111,7 +111,9 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
   const sessionSecret = configuredSecret || crypto.randomBytes(32).toString("hex");
   const secureCookie = secureCookies || process.env.NODE_ENV === "production" ? "; Secure" : "";
   return async (request: IncomingMessage, response: ServerResponse, next: () => void) => {
-    if (request.url === "/api/auth/login" && request.method === "POST") {
+    const requestPath = new URL(request.url || "/", "http://localhost").pathname;
+
+    if (requestPath === "/api/auth/login" && request.method === "POST") {
       const rate = loginRateLimit(request);
       if (!rate.allowed) {
         response.setHeader("Retry-After", String(rate.retryAfter));
@@ -131,16 +133,16 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
       response.setHeader("Set-Cookie", `${sessionCookie}=${sessionToken(sessionSecret, user.id, user.email)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${secureCookie}`);
       return json(response, 200, { data: { user: { id: user.id, email: user.email } } });
     }
-    if (request.url === "/api/auth/session" && request.method === "GET") {
+    if (requestPath === "/api/auth/session" && request.method === "GET") {
       const user = sessionUser(sessionSecret, request);
       return json(response, 200, { data: { user: user ? { id: user.userId, email: user.email } : null } });
     }
-    if (request.url === "/api/auth/logout" && request.method === "POST") {
+    if (requestPath === "/api/auth/logout" && request.method === "POST") {
       response.setHeader("Set-Cookie", `${sessionCookie}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${secureCookie}`);
       return json(response, 200, { data: null });
     }
-    if (request.url?.startsWith("/api/neon-assets/") && request.method === "GET") {
-      const assetId = request.url.split("?")[0].split("/").pop();
+    if (requestPath.startsWith("/api/neon-assets/") && request.method === "GET") {
+      const assetId = requestPath.split("/").pop();
       if (!assetId || !/^[0-9a-f-]{36}$/i.test(assetId)) return json(response, 404, { error: "Asset not found" });
       const result = await pool.query("SELECT mime_type, data FROM portfolio_assets WHERE id = $1 LIMIT 1", [assetId]);
       const asset = result.rows[0];
@@ -149,7 +151,7 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
       response.setHeader("Cache-Control", "public, max-age=31536000, immutable");
       return response.end(asset.data);
     }
-    if (request.url?.startsWith("/api/neon-upload") && request.method === "POST") {
+    if (requestPath.startsWith("/api/neon-upload") && request.method === "POST") {
       const user = sessionUser(sessionSecret, request);
       if (!user) return json(response, 401, { error: "Authentication required" });
       const uploadPath = request.headers["x-upload-path"];
@@ -168,7 +170,7 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
       );
       return json(response, 201, { data: { id: asset.rows[0].id, publicUrl: `/api/neon-assets/${asset.rows[0].id}` } });
     }
-    if (!request.url?.startsWith("/api/neon")) return next();
+    if (!requestPath.startsWith("/api/neon")) return next();
     try {
       const url = new URL(request.url, "http://localhost");
       const table = url.searchParams.get("table") || "";
