@@ -204,11 +204,11 @@ const AdminSettings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><LinkIcon size={18} className="text-primary" /> Contact & Social Links</CardTitle>
-            <CardDescription>Update your email address and main social profiles.</CardDescription>
+            <CardDescription>Set the email address that receives Get In Touch messages and update your social profiles.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="space-y-1.5">
-               <label className="text-sm font-medium flex items-center gap-2"><Mail size={14} className="text-muted-foreground"/> Email Address</label>
+               <label className="text-sm font-medium flex items-center gap-2"><Mail size={14} className="text-muted-foreground"/> Contact Form Recipient</label>
                <Input value={contactForm.email} onChange={(e) => setContactForm(p => ({...p, email: e.target.value}))} placeholder="hello@example.com" />
              </div>
              <div className="space-y-1.5">

@@ -2,6 +2,15 @@
 
 This project uses a Vite client, a Node server, and PostgreSQL/Neon.
 
+## Contact form email
+
+The public contact form always saves submissions in Neon. To deliver each submission to the recipient configured in Admin Settings, add these Vercel Production environment variables:
+
+- `RESEND_API_KEY`: API key from Resend.
+- `RESEND_FROM_EMAIL`: a verified Resend sender, for example `Portfolio <hello@your-domain.com>`.
+
+The recipient is the admin user's email under **Admin Settings > Contact Form Recipient**. Redeploy after adding or changing these variables. Without the Resend variables, submissions are saved but email delivery is not enabled.
+
 ## Staging first
 
 1. Create a separate staging database. Do not point staging at production.

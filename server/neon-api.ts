@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 const LOCAL_USER_ID = "00000000-0000-0000-0000-000000000001";
 const allowedTables = new Set([
   "users", "skills", "experience", "projects", "education", "certifications",
-  "awards", "hobbies", "references", "blog_posts", "newsletter_subscribers",
+  "awards", "hobbies", "references", "blog_posts", "newsletter_subscribers", "contact_messages",
 ]);
 const allowedColumns = /^[a-z][a-z0-9_]*$/;
 const sessionCookie = "portfolio_session";
@@ -104,6 +104,14 @@ export async function ensureNeonSchema(pool: Pool) {
       data BYTEA NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      subject TEXT,
+      message TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
   `);
 }
 
@@ -141,6 +149,49 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
       response.setHeader("Set-Cookie", `${sessionCookie}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${secureCookie}`);
       return json(response, 200, { data: null });
     }
+    if (requestPath === "/api/contact" && request.method === "POST") {
+      let body: Record<string, unknown>;
+      try {
+        body = await readBody(request) as Record<string, unknown>;
+      } catch {
+        return json(response, 400, { error: "Invalid request body" });
+      }
+      const name = typeof body.name === "string" ? body.name.trim() : "";
+      const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+      const subject = typeof body.subject === "string" ? body.subject.trim() : "";
+      const message = typeof body.message === "string" ? body.message.trim() : "";
+      if (!name || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 255 || subject.length > 200 || !message || message.length > 1000) {
+        return json(response, 400, { error: "Please provide valid contact details and a message." });
+      }
+
+      const recipientResult = await pool.query("SELECT email FROM users WHERE is_admin = true AND email IS NOT NULL LIMIT 1");
+      const recipient = recipientResult.rows[0]?.email as string | undefined;
+      if (!recipient) return json(response, 503, { error: "Contact email is not configured." });
+      await pool.query(
+        "INSERT INTO contact_messages (name, email, subject, message) VALUES ($1, $2, $3, $4)",
+        [name, email, subject || null, message],
+      );
+
+      const resendKey = process.env.RESEND_API_KEY;
+      const from = process.env.RESEND_FROM_EMAIL;
+      if (!resendKey || !from) return json(response, 202, { data: { emailDelivered: false } });
+      const emailResponse = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from,
+          to: [recipient],
+          reply_to: email,
+          subject: subject || `New portfolio message from ${name}`,
+          text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+        }),
+      });
+      if (!emailResponse.ok) {
+        console.error("Contact email delivery failed", await emailResponse.text());
+        return json(response, 202, { data: { emailDelivered: false } });
+      }
+      return json(response, 200, { data: { emailDelivered: true } });
+    }
     if (requestPath.startsWith("/api/neon-assets/") && request.method === "GET") {
       const assetId = requestPath.split("/").pop();
       if (!assetId || !/^[0-9a-f-]{36}$/i.test(assetId)) return json(response, 404, { error: "Asset not found" });
@@ -177,7 +228,7 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
       const operation = url.searchParams.get("operation") || "select";
       if (!allowedTables.has(table)) return json(response, 400, { error: "Unsupported table" });
       const user = sessionUser(sessionSecret, request);
-      if (table === "newsletter_subscribers" && !user) return json(response, 401, { error: "Authentication required" });
+      if ((table === "newsletter_subscribers" || table === "contact_messages") && !user) return json(response, 401, { error: "Authentication required" });
       if (operation !== "select" && (!user || !user.userId)) return json(response, 401, { error: "Authentication required" });
       const filters = filtersFrom(url);
       if (filters.some((filter) => !allowedColumns.test(filter.column))) return json(response, 400, { error: "Invalid filter" });

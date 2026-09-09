@@ -35,11 +35,26 @@ const ContactSection = () => {
       return;
     }
     setIsSubmitting(true);
-    // Simulate submission delay
-    await new Promise((r) => setTimeout(r, 1200));
-    setIsSubmitting(false);
-    toast({ title: "Message sent!", description: "Thank you for reaching out. I'll get back to you soon." });
-    setForm({ name: "", email: "", subject: "", message: "" });
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok && response.status !== 202) throw new Error(result.error || "Unable to send your message.");
+      toast({
+        title: response.status === 202 ? "Message received" : "Message sent!",
+        description: response.status === 202
+          ? "Your message was saved. Email delivery is being configured."
+          : "Thank you for reaching out. I'll get back to you soon.",
+      });
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      toast({ title: "Message not sent", description: error instanceof Error ? error.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
