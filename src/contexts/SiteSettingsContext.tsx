@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react";
 import defaultLogo from "@/assets/logo.png";
 import { supabase } from "@/integrations/neon/client";
 
@@ -94,9 +94,14 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   const [faviconUrl, setFaviconUrlState] = useState<string | null>(() => localStorage.getItem("favicon-url"));
   const [settingsUserId, setSettingsUserId] = useState<string | null>(null);
   const [settingsReady, setSettingsReady] = useState(false);
+  const pendingSettings = useRef<Record<string, string | null>>({});
 
   const persistSetting = (values: Record<string, string | null>) => {
-    if (settingsUserId) void supabase.from("users").update(values).eq("id", settingsUserId);
+    if (!settingsUserId) {
+      pendingSettings.current = { ...pendingSettings.current, ...values };
+      return;
+    }
+    void supabase.from("users").update(values).eq("id", settingsUserId);
   };
 
   useEffect(() => {
@@ -108,6 +113,11 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       setSettingsUserId(settings.id);
+      if (Object.keys(pendingSettings.current).length) {
+        const pending = pendingSettings.current;
+        pendingSettings.current = {};
+        void supabase.from("users").update(pending).eq("id", settings.id);
+      }
       if (settings.site_title) setSiteTitleState(settings.site_title);
       if (settings.full_name) {
         setOwnerNameState(settings.full_name);
