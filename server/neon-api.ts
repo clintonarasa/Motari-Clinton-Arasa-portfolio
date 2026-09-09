@@ -170,7 +170,7 @@ export function neonApiMiddleware(pool: Pool, configuredSecret?: string, secureC
     }
     if (!request.url?.startsWith("/api/neon")) return next();
     try {
-      const url = new URL(request.url, "https://motari-clinton-arasa-portfolio.vercel.app");
+      const url = new URL(request.url, "http://localhost");
       const table = url.searchParams.get("table") || "";
       const operation = url.searchParams.get("operation") || "select";
       if (!allowedTables.has(table)) return json(response, 400, { error: "Unsupported table" });
