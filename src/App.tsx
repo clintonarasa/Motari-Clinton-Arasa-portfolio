@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { Analytics } from "@vercel/analytics/react";
 import { SiteSettingsProvider, useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { TerminalEasterEgg } from "@/components/portfolio/TerminalEasterEgg";
@@ -101,6 +102,7 @@ const AppContent = () => {
             <TerminalEasterEgg />
             <AnimatedRoutes />
           </BrowserRouter>
+          <Analytics />
         </TooltipProvider>
   );
 };
