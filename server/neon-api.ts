@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 const LOCAL_USER_ID = "00000000-0000-0000-0000-000000000001";
 const allowedTables = new Set([
   "users", "skills", "experience", "projects", "education", "certifications",
-  "awards", "hobbies", "references", "blog_posts", "newsletter_subscribers", "contact_messages",
+  "awards", "hobbies", "references", "blog_posts", "newsletter_subscribers", "contact_messages", "services",
 ]);
 const allowedColumns = /^[a-z][a-z0-9_]*$/;
 const sessionCookie = "portfolio_session";
@@ -111,6 +111,16 @@ export async function ensureNeonSchema(pool: Pool) {
       subject TEXT,
       message TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS services (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      icon TEXT NOT NULL DEFAULT 'Code2',
+      display_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
 }

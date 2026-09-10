@@ -1,7 +1,15 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Code2, Cloud, Handshake, GraduationCap } from "lucide-react";
+import { supabase } from "@/integrations/neon/client";
 
-const services = [
+interface ServiceRecord {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+const defaultServices: ServiceRecord[] = [
   {
     icon: Code2,
     title: "Web Development",
@@ -28,6 +36,8 @@ const services = [
   },
 ];
 
+const icons = { Code2, Cloud, Handshake, GraduationCap };
+
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.12 } },
@@ -38,7 +48,18 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const ServicesSection = () => (
+const ServicesSection = () => {
+  const [services, setServices] = useState(defaultServices);
+
+  useEffect(() => {
+    const loadServices = async () => {
+      const { data } = await supabase.from("services").select("*").order("display_order", { ascending: true });
+      if (Array.isArray(data) && data.length) setServices(data as ServiceRecord[]);
+    };
+    void loadServices();
+  }, []);
+
+  return (
   <section className="px-6 pb-20 md:px-12 lg:px-24 lg:pb-28">
     <div className="max-w-6xl mx-auto">
       <motion.p
@@ -66,7 +87,7 @@ const ServicesSection = () => (
         className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         {services.map((s) => {
-          const Icon = s.icon;
+            const Icon = icons[s.icon as keyof typeof icons] || Code2;
           return (
             <motion.div
               key={s.title}
@@ -87,6 +108,7 @@ const ServicesSection = () => (
       </motion.div>
     </div>
   </section>
-);
+  );
+};
 
 export default ServicesSection;

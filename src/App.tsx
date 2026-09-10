@@ -33,6 +33,7 @@ const AdminEducation = React.lazy(() => import("./pages/admin/AdminEducation"));
 const AdminAwards = React.lazy(() => import("./pages/admin/AdminAwards"));
 const AdminHobbies = React.lazy(() => import("./pages/admin/AdminHobbies"));
 const AdminReferences = React.lazy(() => import("./pages/admin/AdminReferences"));
+const AdminServices = React.lazy(() => import("./pages/admin/AdminServices"));
 const AdminBlogPostsDB = React.lazy(() => import("./pages/admin/AdminBlogPostsDB"));
 const AdminSettings = React.lazy(() => import("./pages/admin/AdminSettings"));
 
@@ -68,6 +69,7 @@ const AnimatedRoutes = () => {
             <Route path="awards" element={<PageTransition><AdminAwards /></PageTransition>} />
             <Route path="hobbies" element={<PageTransition><AdminHobbies /></PageTransition>} />
             <Route path="references" element={<PageTransition><AdminReferences /></PageTransition>} />
+            <Route path="services" element={<PageTransition><AdminServices /></PageTransition>} />
             <Route path="blog" element={<PageTransition><AdminBlogPostsDB /></PageTransition>} />
             <Route path="settings" element={<PageTransition><AdminSettings /></PageTransition>} />
           </Route>

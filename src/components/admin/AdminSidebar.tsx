@@ -1,6 +1,6 @@
 import {
   User, FileText, Code2, Briefcase, FolderKanban,
-  GraduationCap, Award, Heart, Users, Settings, LogOut, ArrowLeft, LayoutDashboard, BookOpen
+  GraduationCap, Award, Heart, Users, Settings, LogOut, ArrowLeft, LayoutDashboard, BookOpen, Wrench
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -28,6 +28,7 @@ const contentItems = [
   { title: "Awards", url: "/admin/awards", icon: Award },
   { title: "Hobbies", url: "/admin/hobbies", icon: Heart },
   { title: "References", url: "/admin/references", icon: Users },
+  { title: "Services", url: "/admin/services", icon: Wrench },
   { title: "Blog Articles", url: "/admin/blog", icon: BookOpen },
 ];
 
