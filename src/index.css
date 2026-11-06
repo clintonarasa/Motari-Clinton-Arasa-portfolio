@@ -126,7 +126,8 @@
 @media print {
   @page {
     size: A4;
-    margin: 1in;
+    /* Leave no browser margin area for automatic date, title, URL, or page-number headers/footers. */
+    margin: 0 !important;
   }
 
   body {
