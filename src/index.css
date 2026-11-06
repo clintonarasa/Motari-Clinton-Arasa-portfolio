@@ -126,8 +126,8 @@
 @media print {
   @page {
     size: A4;
-    /* Zero page margin suppresses the browser's automatic print header and footer. */
-    margin: 0 !important;
+    /* Restore standard Normal margins; zero margins made the resume content too wide. */
+    margin: 1in !important;
   }
 
   body {
